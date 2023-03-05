@@ -605,6 +605,8 @@ void InfoNES_Main()
 /*              InfoNES_Cycle() : The loop of emulation              */
 /*                                                                   */
 /*===================================================================*/
+extern "C" void decodeJoystickState();
+
 void __not_in_flash_func(InfoNES_Cycle)()
 {
   /*
@@ -620,6 +622,8 @@ void __not_in_flash_func(InfoNES_Cycle)()
   for (;;)
   {
     util::WorkMeterMark(MARKER_START);
+
+    decodeJoystickState();
 
     // Set a flag if a scanning line is a hit in the sprite #0
     if (SpriteJustHit == PPU_Scanline &&

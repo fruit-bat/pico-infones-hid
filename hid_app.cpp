@@ -6,6 +6,7 @@
 #include <tusb.h>
 #include <stdio.h>
 #include "gamepad.h"
+#include "hid_host_joy.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -101,6 +102,68 @@ extern "C"
         };
     }
 
+    void print(hid_keyboard_report_t const *report) {
+        printf("HID key report modifiers %2.2X report ", report->modifier);
+        for(int i = 0; i < 6; ++i) printf("%2.2X", report->keycode[i]);
+        printf("\n");
+    }
+
+    void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
+    }
+
+    void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint8_t instance) {
+    }
+
+    void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
+        printf("PREV ");print(prev_report);
+        printf("CURR ");print(report);
+    }
+
+    void __not_in_flash_func(decodeJoystickState)() {
+        tusb_hid_simple_joysick_t* simple_joysticks[2];
+        uint8_t n = tuh_hid_get_simple_joysticks(simple_joysticks, 2);
+        if (n > 0) {
+            static long lastUpdated = 0;
+            tusb_hid_simple_joysick_t* joystick = simple_joysticks[0];
+            if (joystick->updated > lastUpdated) {
+                tusb_hid_simple_joysick_values_t* values = &joystick->values;
+                auto &gp = io::getCurrentGamePadState(0);
+                gp.axis[0] = values->x1;
+                gp.axis[1] = values->y1;
+                gp.axis[2] = values->x2;
+                gp.buttons = values->buttons;
+                gp.convertButtonsFromAxis(0, 1);
+                lastUpdated = joystick->updated;
+            }
+        }
+        /*
+        if (n > 1) {
+            if (_updatedR != joystick->updated) {
+            uint8_t sinclairR = 0xff;
+            tusb_hid_simple_joysick_values_t* values = &joystick->values;
+            if (values->x1 == joystick->axis_x1.logical_max || values->x2 == joystick->axis_x2.logical_max) {
+                sinclairR &= ~(1<<3);
+            }
+            if (values->x1 == joystick->axis_x1.logical_min || values->x2 == joystick->axis_x2.logical_min) {
+                sinclairR &= ~(1<<4);
+            }	
+            if (values->y1 == joystick->axis_y1.logical_max || values->y2 == joystick->axis_y2.logical_max) {
+                sinclairR &= ~(1<<2);
+            }
+            if (values->y1 == joystick->axis_y1.logical_min || values->y2 == joystick->axis_y2.logical_min) {
+                sinclairR &= ~(1<<1);
+            }
+            if (values->buttons & 7) {
+                sinclairR &= ~(1<<0);
+            }
+            _sinclairR = sinclairR;
+            _updatedR = joystick->updated;
+            }
+        }
+        */
+    }
+
+/*
     void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_report, uint16_t desc_len)
     {
         uint16_t vid, pid;
@@ -289,7 +352,7 @@ extern "C"
             printf("Error: cannot request to receive report\r\n");
         }
     }
-
+*/
 #ifdef __cplusplus
 }
 #endif

@@ -12,6 +12,8 @@ include(pico_sdk_import.cmake)
 project(picones C CXX ASM)
 pico_sdk_init()
 
+get_filename_component(PICO_FOLDER ${CMAKE_CURRENT_LIST_DIR}/.. ABSOLUTE)
+
 add_executable(picones
     main.cpp
     hid_app.cpp
@@ -48,19 +50,26 @@ PRIVATE
     dvi
     util
     infones
-
     tinyusb_host
+    pico_emu_utils
 )
 
 target_include_directories(picones
 PRIVATE
-    pico_lib
+    ${PICO_FOLDER}/pico_lib/
+    ${PICO_FOLDER}/pico-emu-utils/
+    ${PICO_FOLDER}/pimoroni-pico/drivers/fatfs
+    ${PICO_FOLDER}/pimoroni-pico/drivers/sdcard
     infones
     .
 )
 
-add_subdirectory(pico_lib/dvi)
-add_subdirectory(pico_lib/util)
+add_subdirectory(${PICO_FOLDER}/pico-emu-utils "${CMAKE_CURRENT_BINARY_DIR}/pico-emu-utils")
+add_subdirectory(${PICO_FOLDER}/pico_lib/util "${CMAKE_CURRENT_BINARY_DIR}/pico_lib/util")
+add_subdirectory(${PICO_FOLDER}/pico_lib/dvi "${CMAKE_CURRENT_BINARY_DIR}/pico_lib/dvi")
+add_subdirectory(${PICO_FOLDER}/pimoroni-pico/drivers/fatfs "${CMAKE_CURRENT_BINARY_DIR}/pimoroni-pico/drivers/fatfs")
+add_subdirectory(${PICO_FOLDER}/pimoroni-pico/drivers/sdcard "${CMAKE_CURRENT_BINARY_DIR}/pimoroni-pico/drivers/sdcard")
+
 add_subdirectory(infones)
 
 pico_add_extra_outputs(picones)
