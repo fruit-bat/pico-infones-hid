@@ -9,22 +9,7 @@
 #ifndef K6502_H_INCLUDED
 #define K6502_H_INCLUDED
 
-// Type definition
-#ifndef DWORD
-typedef unsigned long DWORD;
-#endif
-
-#ifndef WORD
-typedef unsigned short WORD;
-#endif
-
-#ifndef BYTE
-typedef unsigned char BYTE;
-#endif
-
-#ifndef NULL
-#define NULL 0
-#endif
+#include "InfoNES_Types.h"
 
 /* 6502 Flags */
 #define FLAG_C 0x01

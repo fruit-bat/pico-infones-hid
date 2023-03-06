@@ -164,7 +164,7 @@ void loadNVRAM()
     }
     SRAMwritten = false;
 }
-
+extern "C" void decodeJoystickState();
 void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 {
     static constexpr int LEFT = 1 << 6;
@@ -183,21 +183,14 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     ++rapidFireCounter;
     bool reset = false;
 
+    decodeJoystickState();
+
     for (int i = 0; i < 2; ++i)
     {
         auto &dst = i == 0 ? *pdwPad1 : *pdwPad2;
-        auto &gp = io::getCurrentGamePadState(i);
 
-        int v = (gp.buttons & io::GamePadState::Button::LEFT ? LEFT : 0) |
-                (gp.buttons & io::GamePadState::Button::RIGHT ? RIGHT : 0) |
-                (gp.buttons & io::GamePadState::Button::UP ? UP : 0) |
-                (gp.buttons & io::GamePadState::Button::DOWN ? DOWN : 0) |
-                (gp.buttons & io::GamePadState::Button::A ? A : 0) |
-                (gp.buttons & io::GamePadState::Button::B ? B : 0) |
-                (gp.buttons & io::GamePadState::Button::SELECT ? SELECT : 0) |
-                (gp.buttons & io::GamePadState::Button::START ? START : 0) |
-                0;
-
+        int v = io::buttons[i];
+//printf("%d %4.4X\n", i, v);
         int rv = v;
         if (rapidFireCounter & 2)
         {
@@ -230,11 +223,11 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
             }
             if (pushed & A)
             {
-                rapidFireMask[i] ^= io::GamePadState::Button::A;
+                rapidFireMask[i] ^= A;
             }
             if (pushed & B)
             {
-                rapidFireMask[i] ^= io::GamePadState::Button::B;
+                rapidFireMask[i] ^= B;
             }
             if (pushed & UP)
             {

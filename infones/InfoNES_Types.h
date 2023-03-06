@@ -9,19 +9,24 @@
 #ifndef InfoNES_TYPES_H_INCLUDED
 #define InfoNES_TYPES_H_INCLUDED
 
+#include <stdio.h>
+
 /*-------------------------------------------------------------------*/
 /*  Type definition                                                  */
 /*-------------------------------------------------------------------*/
 #ifndef DWORD
-typedef unsigned long  DWORD;
+typedef uint32_t  DWORD;
+//typedef unsigned long DWORD;
 #endif /* !DWORD */
 
 #ifndef WORD
-typedef unsigned short WORD;
+typedef uint16_t WORD;
+//typedef unsigned short WORD;
 #endif /* !WORD */
 
 #ifndef BYTE
-typedef unsigned char  BYTE;
+typedef uint8_t  BYTE;
+//typedef unsigned char BYTE;
 #endif /* !BYTE */
 
 /*-------------------------------------------------------------------*/

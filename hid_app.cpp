@@ -14,7 +14,7 @@ extern "C"
 #endif
 
 #define MAX_REPORT 4
-
+/*
     namespace
     {
         uint8_t _report_count[CFG_TUH_HID];
@@ -101,66 +101,63 @@ extern "C"
             int getHat() const { return buttons[0] & 15; }
         };
     }
-
-    void print(hid_keyboard_report_t const *report) {
-        printf("HID key report modifiers %2.2X report ", report->modifier);
-        for(int i = 0; i < 6; ++i) printf("%2.2X", report->keycode[i]);
-        printf("\n");
-    }
-
+*/
     void __not_in_flash_func(process_kbd_mount)(uint8_t dev_addr, uint8_t instance) {
     }
 
     void __not_in_flash_func(process_kbd_unmount)(uint8_t dev_addr, uint8_t instance) {
     }
 
-    void process_kbd_report(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
-        printf("PREV ");print(prev_report);
-        printf("CURR ");print(report);
+    void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
     }
 
     void __not_in_flash_func(decodeJoystickState)() {
+        static constexpr int LEFT = 1 << 6;
+        static constexpr int RIGHT = 1 << 7;
+        static constexpr int UP = 1 << 4;
+        static constexpr int DOWN = 1 << 5;
+        static constexpr int SELECT = 1 << 2;
+        static constexpr int START = 1 << 3;
+        static constexpr int A = 1 << 0;
+        static constexpr int B = 1 << 1;
+
         tusb_hid_simple_joysick_t* simple_joysticks[2];
         uint8_t n = tuh_hid_get_simple_joysticks(simple_joysticks, 2);
-        if (n > 0) {
-            static long lastUpdated = 0;
-            tusb_hid_simple_joysick_t* joystick = simple_joysticks[0];
-            if (joystick->updated > lastUpdated) {
+        for( int i = 0; i < n; ++i) {
+            static uint32_t lastUpdated[2] = {0, 0};
+            tusb_hid_simple_joysick_t* joystick = simple_joysticks[i];
+            if (joystick->updated != lastUpdated[i]) {
+                
                 tusb_hid_simple_joysick_values_t* values = &joystick->values;
-                auto &gp = io::getCurrentGamePadState(0);
-                gp.axis[0] = values->x1;
-                gp.axis[1] = values->y1;
-                gp.axis[2] = values->x2;
-                gp.buttons = values->buttons;
-                gp.convertButtonsFromAxis(0, 1);
-                lastUpdated = joystick->updated;
+                uint32_t buttons = 0;
+                if (values->x1 == joystick->axis_x1.logical_max || values->x2 == joystick->axis_x2.logical_max) {
+                    buttons |= RIGHT;
+                }
+                if (values->x1 == joystick->axis_x1.logical_min || values->x2 == joystick->axis_x2.logical_min) {
+                    buttons |= LEFT;
+                }	
+                if (values->y1 == joystick->axis_y1.logical_max || values->y2 == joystick->axis_y2.logical_max) {
+                    buttons |= DOWN;
+                }
+                if (values->y1 == joystick->axis_y1.logical_min || values->y2 == joystick->axis_y2.logical_min) {
+                    buttons |= UP;
+                }
+                if (values->buttons & 1) {
+                    buttons |= A;
+                }
+                if (values->buttons & 2) {
+                    buttons |= B;
+                }
+                if (values->buttons & 4) {
+                    buttons |= SELECT;
+                }
+                if (values->buttons & 8) {
+                    buttons |= START;
+                }
+                io::buttons[i] = buttons;
+                lastUpdated[i] = joystick->updated;
             }
         }
-        /*
-        if (n > 1) {
-            if (_updatedR != joystick->updated) {
-            uint8_t sinclairR = 0xff;
-            tusb_hid_simple_joysick_values_t* values = &joystick->values;
-            if (values->x1 == joystick->axis_x1.logical_max || values->x2 == joystick->axis_x2.logical_max) {
-                sinclairR &= ~(1<<3);
-            }
-            if (values->x1 == joystick->axis_x1.logical_min || values->x2 == joystick->axis_x2.logical_min) {
-                sinclairR &= ~(1<<4);
-            }	
-            if (values->y1 == joystick->axis_y1.logical_max || values->y2 == joystick->axis_y2.logical_max) {
-                sinclairR &= ~(1<<2);
-            }
-            if (values->y1 == joystick->axis_y1.logical_min || values->y2 == joystick->axis_y2.logical_min) {
-                sinclairR &= ~(1<<1);
-            }
-            if (values->buttons & 7) {
-                sinclairR &= ~(1<<0);
-            }
-            _sinclairR = sinclairR;
-            _updatedR = joystick->updated;
-            }
-        }
-        */
     }
 
 /*
