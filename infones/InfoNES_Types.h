@@ -9,7 +9,7 @@
 #ifndef InfoNES_TYPES_H_INCLUDED
 #define InfoNES_TYPES_H_INCLUDED
 
-#include <stdio.h>
+#include <stdint.h>
 
 /*-------------------------------------------------------------------*/
 /*  Type definition                                                  */

@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-namespace io
-{
-    extern uint32_t buttons[2];
-}
+extern "C" void decodeJoystickState(uint32_t* v);
 
 #endif /* _510036F3_0134_6411_4376_A918ACA8AC4C */

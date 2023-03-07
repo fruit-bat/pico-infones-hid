@@ -111,7 +111,7 @@ extern "C"
     void __not_in_flash_func(process_kbd_report)(hid_keyboard_report_t const *report, hid_keyboard_report_t const *prev_report) {
     }
 
-    void __not_in_flash_func(decodeJoystickState)() {
+    void __not_in_flash_func(decodeJoystickState)(uint32_t* v) {
         static constexpr int LEFT = 1 << 6;
         static constexpr int RIGHT = 1 << 7;
         static constexpr int UP = 1 << 4;
@@ -123,39 +123,45 @@ extern "C"
 
         tusb_hid_simple_joysick_t* simple_joysticks[2];
         uint8_t n = tuh_hid_get_simple_joysticks(simple_joysticks, 2);
-        for( int i = 0; i < n; ++i) {
-            static uint32_t lastUpdated[2] = {0, 0};
-            tusb_hid_simple_joysick_t* joystick = simple_joysticks[i];
-            if (joystick->updated != lastUpdated[i]) {
-                
-                tusb_hid_simple_joysick_values_t* values = &joystick->values;
-                uint32_t buttons = 0;
-                if (values->x1 == joystick->axis_x1.logical_max || values->x2 == joystick->axis_x2.logical_max) {
-                    buttons |= RIGHT;
+        for( int i = 0; i < 2; ++i) {
+            if (i < n) {
+                static uint32_t lastUpdated[2] = {0, 0};
+                tusb_hid_simple_joysick_t* joystick = simple_joysticks[i];
+                if (joystick->updated != lastUpdated[i]) {
+                    
+                    tusb_hid_simple_joysick_values_t* values = &joystick->values;
+                    uint32_t buttons = 0;
+                    if (values->x1 == joystick->axis_x1.logical_max || values->x2 == joystick->axis_x2.logical_max) {
+                        buttons |= RIGHT;
+                    }
+                    if (values->x1 == joystick->axis_x1.logical_min || values->x2 == joystick->axis_x2.logical_min) {
+                        buttons |= LEFT;
+                    }	
+                    if (values->y1 == joystick->axis_y1.logical_max || values->y2 == joystick->axis_y2.logical_max) {
+                        buttons |= DOWN;
+                    }
+                    if (values->y1 == joystick->axis_y1.logical_min || values->y2 == joystick->axis_y2.logical_min) {
+                        buttons |= UP;
+                    }
+                    if (values->buttons & 1) {
+                        buttons |= A;
+                    }
+                    if (values->buttons & 2) {
+                        buttons |= B;
+                    }
+                    if (values->buttons & 4) {
+                        buttons |= SELECT;
+                    }
+                    if (values->buttons & 8) {
+                        buttons |= START;
+                    }
+                    v[i] = buttons;
+                    lastUpdated[i] = joystick->updated;
                 }
-                if (values->x1 == joystick->axis_x1.logical_min || values->x2 == joystick->axis_x2.logical_min) {
-                    buttons |= LEFT;
-                }	
-                if (values->y1 == joystick->axis_y1.logical_max || values->y2 == joystick->axis_y2.logical_max) {
-                    buttons |= DOWN;
-                }
-                if (values->y1 == joystick->axis_y1.logical_min || values->y2 == joystick->axis_y2.logical_min) {
-                    buttons |= UP;
-                }
-                if (values->buttons & 1) {
-                    buttons |= A;
-                }
-                if (values->buttons & 2) {
-                    buttons |= B;
-                }
-                if (values->buttons & 4) {
-                    buttons |= SELECT;
-                }
-                if (values->buttons & 8) {
-                    buttons |= START;
-                }
-                io::buttons[i] = buttons;
-                lastUpdated[i] = joystick->updated;
+            }
+            else
+            {
+                v[i] = 0;
             }
         }
     }

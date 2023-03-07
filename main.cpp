@@ -164,7 +164,7 @@ void loadNVRAM()
     }
     SRAMwritten = false;
 }
-extern "C" void decodeJoystickState();
+
 void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 {
     static constexpr int LEFT = 1 << 6;
@@ -183,13 +183,14 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     ++rapidFireCounter;
     bool reset = false;
 
-    decodeJoystickState();
+    static uint32_t va[2];
+    decodeJoystickState(va);
 
     for (int i = 0; i < 2; ++i)
     {
         auto &dst = i == 0 ? *pdwPad1 : *pdwPad2;
 
-        int v = io::buttons[i];
+        int v = va[i];
 //printf("%d %4.4X\n", i, v);
         int rv = v;
         if (rapidFireCounter & 2)
