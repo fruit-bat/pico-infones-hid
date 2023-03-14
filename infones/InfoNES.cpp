@@ -107,20 +107,20 @@ BYTE PPU_R3;
 BYTE PPU_R7;
 
 /* Vertical scroll value */
-//BYTE PPU_Scr_V;
-//BYTE PPU_Scr_V_Next;
-//BYTE PPU_Scr_V_Byte;
-//BYTE PPU_Scr_V_Byte_Next;
-//BYTE PPU_Scr_V_Bit;
-//BYTE PPU_Scr_V_Bit_Next;
+BYTE PPU_Scr_V;
+BYTE PPU_Scr_V_Next;
+BYTE PPU_Scr_V_Byte;
+BYTE PPU_Scr_V_Byte_Next;
+BYTE PPU_Scr_V_Bit;
+BYTE PPU_Scr_V_Bit_Next;
 
 /* Horizontal scroll value */
-//BYTE PPU_Scr_H;
-//BYTE PPU_Scr_H_Next;
+BYTE PPU_Scr_H;
+BYTE PPU_Scr_H_Next;
 BYTE PPU_Scr_H_Byte;
-//BYTE PPU_Scr_H_Byte_Next;
+BYTE PPU_Scr_H_Byte_Next;
 BYTE PPU_Scr_H_Bit;
-//BYTE PPU_Scr_H_Bit_Next;
+BYTE PPU_Scr_H_Bit_Next;
 
 /* PPU Address */
 WORD PPU_Addr;
@@ -506,9 +506,9 @@ void InfoNES_SetupPPU()
   FrameIRQ_Enable = 0;
 
   // Reset Scroll values
-  // PPU_Scr_V = PPU_Scr_V_Next = PPU_Scr_V_Byte = PPU_Scr_V_Byte_Next = PPU_Scr_V_Bit = PPU_Scr_V_Bit_Next = 0;
-  // PPU_Scr_H = PPU_Scr_H_Next = PPU_Scr_H_Byte = PPU_Scr_H_Byte_Next = PPU_Scr_H_Bit = PPU_Scr_H_Bit_Next = 0;
-  // PPU_Scr_V_Byte = PPU_Scr_V_Bit = 0;
+  PPU_Scr_V = PPU_Scr_V_Next = PPU_Scr_V_Byte = PPU_Scr_V_Byte_Next = PPU_Scr_V_Bit = PPU_Scr_V_Bit_Next = 0;
+  PPU_Scr_H = PPU_Scr_H_Next = PPU_Scr_H_Byte = PPU_Scr_H_Byte_Next = PPU_Scr_H_Bit = PPU_Scr_H_Bit_Next = 0;
+  PPU_Scr_V_Byte = PPU_Scr_V_Bit = 0;
   PPU_Scr_H_Byte = PPU_Scr_H_Bit = 0;
 
   // Reset PPU address
@@ -689,10 +689,10 @@ int __not_in_flash_func(InfoNES_HSync)()
   InfoNES_pAPUHsync(!APU_Mute);
   util::WorkMeterMark(MARKER_SOUND);
 
-  // int tmpv = (PPU_Addr >> 12) + ((PPU_Addr >> 5) << 3);
-  // tmpv -= PPU_Scanline >= 240 ? 0 : PPU_Scanline;
-  // PPU_Scr_V_Bit = tmpv & 7;
-  // PPU_Scr_V_Byte = (tmpv >> 3) & 31;
+  int tmpv = (PPU_Addr >> 12) + ((PPU_Addr >> 5) << 3);
+  tmpv -= PPU_Scanline >= 240 ? 0 : PPU_Scanline;
+  PPU_Scr_V_Bit = tmpv & 7;
+  PPU_Scr_V_Byte = (tmpv >> 3) & 31;
   PPU_Scr_H_Byte = PPU_Addr & 31;
   PPU_NameTableBank = NAME_TABLE0 + ((PPU_Addr >> 10) & 3);
 
@@ -717,13 +717,13 @@ int __not_in_flash_func(InfoNES_HSync)()
   /*  Set new scroll values                                            */
   /*-------------------------------------------------------------------*/
 
-  //  PPU_Scr_V = PPU_Scr_V_Next;
-  //PPU_Scr_V_Byte = PPU_Scr_V_Byte_Next;
-  //PPU_Scr_V_Bit = PPU_Scr_V_Bit_Next;
+  PPU_Scr_V = PPU_Scr_V_Next;
+  PPU_Scr_V_Byte = PPU_Scr_V_Byte_Next;
+  PPU_Scr_V_Bit = PPU_Scr_V_Bit_Next;
 
-  //  PPU_Scr_H = PPU_Scr_H_Next;
-  //PPU_Scr_H_Byte = PPU_Scr_H_Byte_Next;
-  //PPU_Scr_H_Bit = PPU_Scr_H_Bit_Next;
+  PPU_Scr_H = PPU_Scr_H_Next;
+  PPU_Scr_H_Byte = PPU_Scr_H_Byte_Next;
+  PPU_Scr_H_Bit = PPU_Scr_H_Bit_Next;
 
   if ((PPU_R1 & R1_SHOW_SP) || (PPU_R1 & R1_SHOW_SCR))
   {
@@ -915,7 +915,7 @@ void __not_in_flash_func(InfoNES_DrawLine)()
   {
     nNameTable = PPU_NameTableBank;
 
-#if 0
+#if 1
     nY = PPU_Scr_V_Byte + (PPU_Scanline >> 3);
     nYBit = PPU_Scr_V_Bit + (PPU_Scanline & 7);
 
