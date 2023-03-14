@@ -88,19 +88,19 @@ extern BYTE PPU_R2;
 extern BYTE PPU_R3;
 extern BYTE PPU_R7;
 
-//extern BYTE PPU_Scr_V;
-//extern BYTE PPU_Scr_V_Next;
-//extern BYTE PPU_Scr_V_Byte;
-//extern BYTE PPU_Scr_V_Byte_Next;
-//extern BYTE PPU_Scr_V_Bit;
-//extern BYTE PPU_Scr_V_Bit_Next;
+extern BYTE PPU_Scr_V;
+extern BYTE PPU_Scr_V_Next;
+extern BYTE PPU_Scr_V_Byte;
+extern BYTE PPU_Scr_V_Byte_Next;
+extern BYTE PPU_Scr_V_Bit;
+extern BYTE PPU_Scr_V_Bit_Next;
 
-//extern BYTE PPU_Scr_H;
-//extern BYTE PPU_Scr_H_Next;
+extern BYTE PPU_Scr_H;
+extern BYTE PPU_Scr_H_Next;
 extern BYTE PPU_Scr_H_Byte;
-//extern BYTE PPU_Scr_H_Byte_Next;
+extern BYTE PPU_Scr_H_Byte_Next;
 extern BYTE PPU_Scr_H_Bit;
-//extern BYTE PPU_Scr_H_Bit_Next;
+extern BYTE PPU_Scr_H_Bit_Next;
 
 extern BYTE PPU_Latch_Flag;
 extern WORD PPU_Addr;
