@@ -88,19 +88,19 @@ extern BYTE PPU_R2;
 extern BYTE PPU_R3;
 extern BYTE PPU_R7;
 
-//extern BYTE PPU_Scr_V;
-//extern BYTE PPU_Scr_V_Next;
-//extern BYTE PPU_Scr_V_Byte;
-//extern BYTE PPU_Scr_V_Byte_Next;
-//extern BYTE PPU_Scr_V_Bit;
-//extern BYTE PPU_Scr_V_Bit_Next;
+extern BYTE PPU_Scr_V;
+extern BYTE PPU_Scr_V_Next;
+extern BYTE PPU_Scr_V_Byte;
+extern BYTE PPU_Scr_V_Byte_Next;
+extern BYTE PPU_Scr_V_Bit;
+extern BYTE PPU_Scr_V_Bit_Next;
 
-//extern BYTE PPU_Scr_H;
-//extern BYTE PPU_Scr_H_Next;
+extern BYTE PPU_Scr_H;
+extern BYTE PPU_Scr_H_Next;
 extern BYTE PPU_Scr_H_Byte;
-//extern BYTE PPU_Scr_H_Byte_Next;
+extern BYTE PPU_Scr_H_Byte_Next;
 extern BYTE PPU_Scr_H_Bit;
-//extern BYTE PPU_Scr_H_Bit_Next;
+extern BYTE PPU_Scr_H_Bit_Next;
 
 extern BYTE PPU_Latch_Flag;
 extern WORD PPU_Addr;
@@ -137,13 +137,13 @@ extern BYTE PPU_UpDown_Clip;
 #define SCAN_VBLANK 4
 
 #define SCAN_TOP_OFF_SCREEN_START 0
-#define SCAN_ON_SCREEN_START 4
+#define SCAN_ON_SCREEN_START 0
 #define SCAN_BOTTOM_OFF_SCREEN_START 232
 #define SCAN_UNKNOWN_START 240
 //#define SCAN_VBLANK_START 242
 #define SCAN_VBLANK_START 245
 //#define SCAN_VBLANK_END 262
-#define SCAN_VBLANK_END 261 // 262-1
+#define SCAN_VBLANK_END 262 // 262-1
 
 // #define STEP_PER_SCANLINE 112
 // #define STEP_PER_FRAME 29828
