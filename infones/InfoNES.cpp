@@ -289,7 +289,7 @@ void InfoNES_Init()
   for (nIdx = 0; nIdx < 263; ++nIdx)
   {
     if (nIdx < SCAN_ON_SCREEN_START)
-      PPU_ScanTable[nIdx] = SCAN_ON_SCREEN;
+      PPU_ScanTable[nIdx] = SCAN_TOP_OFF_SCREEN;
     else if (nIdx < SCAN_BOTTOM_OFF_SCREEN_START)
       PPU_ScanTable[nIdx] = SCAN_ON_SCREEN;
     else if (nIdx < SCAN_UNKNOWN_START)
@@ -508,8 +508,6 @@ void InfoNES_SetupPPU()
   // Reset Scroll values
   PPU_Scr_V = PPU_Scr_V_Next = PPU_Scr_V_Byte = PPU_Scr_V_Byte_Next = PPU_Scr_V_Bit = PPU_Scr_V_Bit_Next = 0;
   PPU_Scr_H = PPU_Scr_H_Next = PPU_Scr_H_Byte = PPU_Scr_H_Byte_Next = PPU_Scr_H_Bit = PPU_Scr_H_Bit_Next = 0;
-  PPU_Scr_V_Byte = PPU_Scr_V_Bit = 0;
-  PPU_Scr_H_Byte = PPU_Scr_H_Bit = 0;
 
   // Reset PPU address
   PPU_Addr = 0;
@@ -689,12 +687,7 @@ int __not_in_flash_func(InfoNES_HSync)()
   InfoNES_pAPUHsync(!APU_Mute);
   util::WorkMeterMark(MARKER_SOUND);
 
-  int tmpv = (PPU_Addr >> 12) + ((PPU_Addr >> 5) << 3);
-  tmpv -= PPU_Scanline >= 240 ? 0 : PPU_Scanline;
-  PPU_Scr_V_Bit = tmpv & 7;
-  PPU_Scr_V_Byte = (tmpv >> 3) & 31;
-  PPU_Scr_H_Byte = PPU_Addr & 31;
-  PPU_NameTableBank = NAME_TABLE0 + ((PPU_Addr >> 10) & 3);
+  //PPU_NameTableBank = NAME_TABLE0 + ((PPU_Addr >> 10) & 3);
 
   /*-------------------------------------------------------------------*/
   /*  Render a scanline                                                */
@@ -724,7 +717,7 @@ int __not_in_flash_func(InfoNES_HSync)()
   PPU_Scr_H = PPU_Scr_H_Next;
   PPU_Scr_H_Byte = PPU_Scr_H_Byte_Next;
   PPU_Scr_H_Bit = PPU_Scr_H_Bit_Next;
-
+/*
   if ((PPU_R1 & R1_SHOW_SP) || (PPU_R1 & R1_SHOW_SCR))
   {
     if (PPU_Scanline == SCAN_VBLANK_END)
@@ -752,7 +745,7 @@ int __not_in_flash_func(InfoNES_HSync)()
                  ((v & 7) << 12) | (((v >> 3) & 31) << 5);
     }
   }
-
+*/
   /*-------------------------------------------------------------------*/
   /*  Next Scanline                                                    */
   /*-------------------------------------------------------------------*/
@@ -916,9 +909,22 @@ void __not_in_flash_func(InfoNES_DrawLine)()
     nNameTable = PPU_NameTableBank;
 
 #if 1
-    nY = PPU_Scr_V_Byte + (PPU_Scanline >> 3);
-    nYBit = PPU_Scr_V_Bit + (PPU_Scanline & 7);
-
+    int y =  (PPU_Scanline) + (PPU_Scr_V > 239 ? (int)PPU_Scr_V - 256 : PPU_Scr_V);
+    if (y < 0) {
+        // TODO read from a attribute space ?
+        nNameTable ^= NAME_TABLE_V_MASK;
+        nY += 240;
+    }
+    else if (y > 239)
+    {
+      // Next NameTable (An up-down direction)
+      nNameTable ^= NAME_TABLE_V_MASK;
+      y -= 240;
+    } 
+    nY = (y >> 3) & 31;
+    const int yOfsModBG = y & 7;
+    nYBit = yOfsModBG << 3;
+/*
     if (nYBit > 7)
     {
       ++nY;
@@ -927,12 +933,17 @@ void __not_in_flash_func(InfoNES_DrawLine)()
     const int yOfsModBG = nYBit;
     nYBit <<= 3;
 
+    if (nY < 0) {
+        nNameTable ^= NAME_TABLE_V_MASK;
+        nY += 29;
+    }
     if (nY > 29)
     {
-      // Next NameTable (An up-down direction)
       nNameTable ^= NAME_TABLE_V_MASK;
-      nY -= 30;
+      // Next NameTable (An up-down direction)
+       nY -= 30;
     }
+  */
 #else
     nY = (PPU_Addr >> 5) & 31;
     const int yOfsModBG = PPU_Addr >> 12;
