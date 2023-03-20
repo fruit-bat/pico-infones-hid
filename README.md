@@ -12,9 +12,9 @@ The controller should be connected to the micro USB port of the Raspberry Pi Pic
 Supply +5V to VBUS (pin 40) as power source. Be careful not to connect the power supply at the same time as the PC connection, for example when writing programs or ROMs.
 
 ## ROM
-The ROM should be placed in some way from 0x10080000, and can be easily transferred using [picotool](https://github.com/raspberrypi/picotool).
+The ROM should be placed in some way from 0x100A0000, and can be easily transferred using [picotool](https://github.com/raspberrypi/picotool).
 ```
-picotool load foo.nes -t bin -o 0x10080000
+picotool load foo.nes -t bin -o 0x100A0000
 ```
 
 You can either place the .nes files directly or place a tar file containing multiple .nes files. The maximum file size that can be used is 1.5 MiB for the standard Raspberry Pi Pico.
@@ -36,7 +36,7 @@ There are several special functions assigned to button combinations.
 | SELECT + A / B        | Toggle rapid-fire      |
 
 ## Battery backed SRAM
-If there is a game with battery-backed memory, 8K bytes per title will be allocated from address 0x10080000 in the reverse direction.
+If there is a game with battery-backed memory, 8K bytes per title will be allocated from address 0x100A0000 in the reverse direction.
 Writing to Flash ROM is done at the timing when reset or ROM selection is made.
 
 

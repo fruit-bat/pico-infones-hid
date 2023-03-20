@@ -119,9 +119,18 @@ static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
       }
       return byRet;
     }
+    else /* $2000, $2001, $2003, $2005, $2006 */
+    {
+      return PPU_R7;
+    }
     break;
 
   case 0x4000: /* Sound */
+    if ( wAddr == 0x4014 ) 
+    {
+       return wAddr & 0xff;
+    }
+    else
     if (wAddr == 0x4015)
     {
       // APU control
@@ -179,17 +188,17 @@ static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
       return SRAMBANK[wAddr & 0x1fff];
     }
 
-    // case 0x8000: /* ROM BANK 0 */
-    //   return ROMBANK0[wAddr & 0x1fff];
+    case 0x8000: /* ROM BANK 0 */
+      return ROMBANK0[wAddr & 0x1fff];
 
-    // case 0xa000: /* ROM BANK 1 */
-    //   return ROMBANK1[wAddr & 0x1fff];
+    case 0xa000: /* ROM BANK 1 */
+      return ROMBANK1[wAddr & 0x1fff];
 
-    // case 0xc000: /* ROM BANK 2 */
-    //   return ROMBANK2[wAddr & 0x1fff];
+    case 0xc000: /* ROM BANK 2 */
+      return ROMBANK2[wAddr & 0x1fff];
 
-    // case 0xe000: /* ROM BANK 3 */
-    //   return ROMBANK3[wAddr & 0x1fff];
+    case 0xe000: /* ROM BANK 3 */
+      return ROMBANK3[wAddr & 0x1fff];
   }
 
   return (wAddr >> 8); /* when a register is not readable the upper half

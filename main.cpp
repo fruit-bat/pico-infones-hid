@@ -55,7 +55,7 @@ namespace
 
     std::unique_ptr<dvi::DVI> dvi_;
 
-    static constexpr uintptr_t NES_FILE_ADDR = 0x10080000;
+    static constexpr uintptr_t NES_FILE_ADDR = 0x100A0000;
 
     ROMSelector romSelector_;
     util::ExclusiveProc exclProc_;
